@@ -7,7 +7,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="https://fonts.gstatic.com/s/i/materialicons/school/v6/24px.svg" type="image/svg+xml">
-	<title>SMP 3 Muhammadiyah | Reset Password Siswa</title>
+	<title>SMP 3 Muhammadiyah | Reset Password Guru</title>
 
 	<!-- Bootstrap -->
     <link href="{{asset('lte/vendors/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
@@ -25,7 +25,7 @@
     <!-- bootstrap-daterangepicker -->
     <link href="{{asset('lte/vendors/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet">
     <!-- Custom Theme Style -->
-    <link href="{{asset('lte/build/css/custom.min.css')}}" rel="stylesheet">
+    <link href="{{asset('lte/build/css/custom.css')}}" rel="stylesheet">
 	<!-- bootstrap-wysiwyg -->
 	<link href="{{asset('ltevendors/google-code-prettify/bin/prettify.min.css')}}" rel="stylesheet">
 	<!-- Select2 -->
@@ -93,7 +93,7 @@
                     <ul class="nav child_menu">
                       <li><a href="{{route('dashboard.admin_list.index')}}">Daftar Admin</a></li>
                       <li><a href="{{route('dashboard.teacher_list.index')}}">Daftar Guru</a></li>
-                      {{-- <li><a href="{{route('dashboard.student_list.index')}}">Daftar Siswa</a></li> --}}
+                      <li><a href="{{route('dashboard.student_list.index')}}">Daftar Siswa</a></li>
                     </ul>
                   </li>
                   
@@ -170,7 +170,7 @@
 			<div class="">
 				<div class="page-title">
 					<div class="title_left">
-						<h3>Reset Password Guru</h3>
+						<h3>Reset Password Siswa</h3>
 					</div>
 
 					
@@ -180,7 +180,7 @@
 					<div class="col-md-12 col-sm-12 ">
 						<div class="x_panel">
 							<div class="x_title">
-								<h2>Reset Password Guru <small>pada form di bawah</small></h2>
+								<h2>Reset Password Siswa <small>pada form di bawah</small></h2>
 								<ul class="nav navbar-right panel_toolbox">
 									<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
 									</li>
@@ -193,24 +193,44 @@
 							<div class="x_content">
 								<br />
 
-								<form action="{{ route('dashboard.teacher_list.storePassword', $teacher->id) }}" method="POST">
-                                    @csrf
-                                    <div class="item form-group">
-                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="new_password">Password Baru<span class="required">*</span></label>
-                                        <div class="col-md-6 col-sm-6">
-                                            <input type="password" name="new_password" id="new_password" class="form-control" required>
-                                        </div>
-                                    </div>
-                                    <div class="ln_solid"></div>
-                                    <div class="item form-group">
-                                        <div class="col-md-6 col-sm-6 offset-md-3">
-                                            <button class="btn btn-primary" type="button" onclick="window.history.back()">Cancel</button>
-                                            <button class="btn btn-primary" type="reset">Reset</button>
-                                            <button type="submit" class="btn btn-success">Submit</button>
-                                        </div>
-                                    </div>
-                                </form>
-                                
+								<form action="{{ route('dashboard.student_list.storePassword', $teacher->id) }}" onsubmit="return validatePassword()" method="POST">
+                  @csrf
+              
+                  <div class="item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3 label-align" for="password">Password<span class="required">*</span></label>
+                      <div class="col-md-6 col-sm-6">
+                          <input type="password" name="password" id="password" class="form-control" required>
+                      </div>
+                  </div>
+              
+                  <div class="item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3 label-align" for="password_confirmation">Confirm Password<span class="required">*</span></label>
+                      <div class="col-md-6 col-sm-6">
+                          <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
+                      </div>
+                  </div>
+              
+                  {{-- Password error message --}}
+                  <div class="item form-group">
+                      <div class="col-md-6 col-sm-6 offset-md-3">
+                          <span id="passwordError" style="color: red; display: none;"></span>
+                      </div>
+                  </div>
+              
+                  <div class="ln_solid"></div>
+                  <div class="item form-group">
+                      <div class="col-md-6 col-sm-6 offset-md-3">
+                          <button class="btn btn-primary" type="button" onclick="window.history.back()">Cancel</button>
+                          <button class="btn btn-primary" type="reset">Reset</button>
+                          <button type="submit" class="btn btn-success">Submit</button>
+                      </div>
+                  </div>
+                </form>
+                @if (session('error'))
+                  <script>
+                      alert('{{ session('error') }}');
+                  </script>
+                @endif             
                                 
                                 
               
@@ -259,30 +279,31 @@
     <script src="{{asset('lte/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js')}}"></script>
     <!-- iCheck -->
     <script src="{{asset('lte/vendors/iCheck/icheck.min.js')}}"></script>
-	<!-- bootstrap-daterangepicker -->
-	<script src="{{asset('lte/vendors/moment/min/moment.min.js')}}"></script>
-	<script src="{{asset('lte/vendors/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
-	<!-- bootstrap-wysiwyg -->
-	<script src="{{asset('lte/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js')}}"></script>
-	<script src="{{asset('lte/vendors/jquery.hotkeys/jquery.hotkeys.js')}}"></script>
-	<script src="{{asset('lte/vendors/google-code-prettify/src/prettify.js')}}"></script>
-	<!-- jQuery Tags Input -->
-	<script src="{{asset('lte/vendors/jquery.tagsinput/src/jquery.tagsinput.js')}}"></script>
-	<!-- Switchery -->
-	<script src="{{asset('lte/vendors/switchery/dist/switchery.min.js')}}"></script>
-	<!-- Select2 -->
-	<script src="{{asset('lte/vendors/select2/dist/js/select2.full.min.js')}}"></script>
-	<!-- Parsley -->
-	<script src="{{asset('lte/vendors/parsleyjs/dist/parsley.min.js')}}"></script>
-	<!-- Autosize -->
-	<script src="{{asset('lte/vendors/autosize/dist/autosize.min.js')}}"></script>
-	<!-- jQuery autocomplete -->
-	<script src="{{asset('lte/vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js')}}"></script>
-	<!-- starrr -->
-	<script src="{{asset('lte/vendors/starrr/dist/starrr.js')}}"></script>
-	<!-- Custom Theme Scripts -->
-	<script src="{{asset('lte/build/js/custom.min.js')}}"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="{{asset('lte/vendors/moment/min/moment.min.js')}}"></script>
+    <script src="{{asset('lte/vendors/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
+    <!-- bootstrap-wysiwyg -->
+    <script src="{{asset('lte/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js')}}"></script>
+    <script src="{{asset('lte/vendors/jquery.hotkeys/jquery.hotkeys.js')}}"></script>
+    <script src="{{asset('lte/vendors/google-code-prettify/src/prettify.js')}}"></script>
+    <!-- jQuery Tags Input -->
+    <script src="{{asset('lte/vendors/jquery.tagsinput/src/jquery.tagsinput.js')}}"></script>
+    <!-- Switchery -->
+    <script src="{{asset('lte/vendors/switchery/dist/switchery.min.js')}}"></script>
+    <!-- Select2 -->
+    <script src="{{asset('lte/vendors/select2/dist/js/select2.full.min.js')}}"></script>
+    <!-- Parsley -->
+    <script src="{{asset('lte/vendors/parsleyjs/dist/parsley.min.js')}}"></script>
+    <!-- Autosize -->
+    <script src="{{asset('lte/vendors/autosize/dist/autosize.min.js')}}"></script>
+    <!-- jQuery autocomplete -->
+    <script src="{{asset('lte/vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js')}}"></script>
+    <!-- starrr -->
+    <script src="{{asset('lte/vendors/starrr/dist/starrr.js')}}"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="{{asset('lte/build/js/custom.min.js')}}"></script>
     <script src="{{asset('js/other-field.js')}}"></script>
+    <script src="{{asset('js/validate-pass.js')}}"></script>
   </body>
 
 </html>

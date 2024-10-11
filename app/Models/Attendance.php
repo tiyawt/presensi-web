@@ -11,8 +11,6 @@ class Attendance extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['qr_code_id', 'user_schedule_id', 'user_id'];
-    
-    
 
     public function qrcode()
     {

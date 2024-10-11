@@ -76,7 +76,7 @@
                     <ul class="nav child_menu">
                       
                     <li><a href="{{route('dashboard.tables_attend.table_teacher')}}">Guru</a></li>
-                      <li><a href="{{route('dashboard.tables_attend.table_student')}}">Siswa</a></li>
+                    <li><a href="{{route('dashboard.tables_attend.table_student')}}">Siswa</a></li>
                     </ul>
                   </li>
                   <li><a href="{{route('dashboard.attendance.create')}}"><i class="fa fa-plus"></i>Buat Qr Code Kehadiran</a>

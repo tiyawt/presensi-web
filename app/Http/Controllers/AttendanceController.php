@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use App\Models\Qrcode;
 use Spatie\Permission\Models\Role;
-use App\Models\Course;
-use App\Models\Classroom;
+
 
 
 class AttendanceController extends Controller
