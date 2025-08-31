@@ -14,8 +14,7 @@ use App\Http\Controllers\UserScheduleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-
-
+//test git
 
 Route::get('/', function () {
     if (Auth::check()) {
