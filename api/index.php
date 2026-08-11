@@ -1,9 +1,6 @@
 <?php
 
-// Arahkan folder storage dan cache Laravel ke folder temporary Vercel (/tmp)
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-
-# Create storage subdirectories in /tmp if they don't exist
+// Buat direktori temporary di Vercel (/tmp)
 $storageDirs = [
     '/tmp/storage/app',
     '/tmp/storage/framework/cache',
@@ -18,15 +15,9 @@ foreach ($storageDirs as $dir) {
     }
 }
 
-$app->useStoragePath('/tmp/storage');
+// Set penunjuk storage path ke /tmp
+putenv('APP_STORAGE_PATH=/tmp/storage');
+$_ENV['APP_STORAGE_PATH'] = '/tmp/storage';
 
-# Handle the request
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-
-$response = $kernel->handle(
-    $request = Illuminate\Http\Request::capture()
-);
-
-$response->send();
-
-$kernel->terminate($request, $response);
+// Jalankan Laravel
+require __DIR__ . '/../public/index.php';
