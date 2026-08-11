@@ -19,3 +19,5 @@ yarn-error.log
 /.idea
 /.vscode
 .vercel
+/bootstrap/cache/*
+!/bootstrap/cache/.gitkeep
