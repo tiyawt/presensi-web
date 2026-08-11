@@ -52,7 +52,7 @@
         "vercel": [
             "npm install",
             "npm run build",
-            "composer install --no-dev --optimize-autoloader"
+            "composer install --no-dev --optimize-autoloader --no-scripts"
         ]
     },
     "extra": {
