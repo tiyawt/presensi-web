@@ -1,25 +1,25 @@
 {
-    "version": 2,
-    "framework": null,
-    "buildCommand": "npm run build",
-    "outputDirectory": "public",
-    "functions": {
-        "api/index.php": {
-            "runtime": "vercel-php@0.7.1"
-        }
+  "version": 2,
+  "framework": null,
+  "buildCommand": "composer install --no-dev --optimize-autoloader && npm install && npm run build",
+  "outputDirectory": "public",
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.7.1"
+    }
+  },
+  "routes": [
+    {
+      "src": "/build/(.*)",
+      "dest": "/public/build/$1"
     },
-    "routes": [
-        {
-            "src": "/build/(.*)",
-            "dest": "/public/build/$1"
-        },
-        {
-            "src": "/favicon.ico",
-            "dest": "/public/favicon.ico"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/api/index.php"
-        }
-    ]
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.php"
+    }
+  ]
 }
