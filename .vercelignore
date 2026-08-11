@@ -1,3 +1,4 @@
-/vendor
-/node_modules
-/storage
+node_modules
+tests
+storage/logs
+.git

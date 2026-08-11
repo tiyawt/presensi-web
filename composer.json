@@ -51,7 +51,8 @@
         ],
         "vercel": [
             "npm install",
-            "npm run build"
+            "npm run build",
+            "composer install --no-dev --optimize-autoloader"
         ]
     },
     "extra": {
