@@ -113,8 +113,8 @@ return [
         ],
         'turso' => [
             'driver' => 'turso',
-            'url' => env('DB_SYMBOLIC_LINK'),
-            'database' => null,
+            'url' => env('DB_URL'),
+            'database' => env('DB_DATABASE', env('DB_URL', 'turso')),
             'auth_token' => env('DB_AUTH_TOKEN'),
             'method' => 'http',
         ],

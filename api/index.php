@@ -2,7 +2,13 @@
 
 use Illuminate\Http\Request;
 
-// 1. Buat folder sementara di /tmp (writable di serverless Vercel)
+// Force hapus file config cache jika terbawa build Vercel
+$cachedConfig = __DIR__ . '/../bootstrap/cache/config.php';
+if (file_exists($cachedConfig)) {
+    @unlink($cachedConfig);
+}
+
+// 1. Buat folder temporary
 $storageDirs = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache/data',
@@ -17,19 +23,13 @@ foreach ($storageDirs as $dir) {
     }
 }
 
-// 2. Set environment variable storage
 $_ENV['APP_STORAGE_PATH'] = '/tmp/storage';
 
-// 3. Load Autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-// 4. Bootstrap Application (Laravel 11 Way)
-/** @var \Illuminate\Foundation\Application $app */
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-// 5. Pindahkan path Storage & Bootstrap Cache ke /tmp
 $app->useStoragePath('/tmp/storage');
 $app->useBootstrapPath('/tmp/storage/bootstrap');
 
-// 6. Jalankan Aplikasi (Cara Ringkas Laravel 11)
 $app->handleRequest(Request::capture());
