@@ -18,12 +18,6 @@ function initializeScanner() {
         console.error('Error starting QR Code scanner:', err);
         alert('Failed to start QR Code scanner. Please check your camera permissions.');
     });
-
-    // Generate a QR code for demonstration
-    QRCode.toCanvas(document.getElementById('qrcode'), '25 2024-10-09T13:45', function (error) {
-        if (error) console.error(error);
-        console.log('QR code generated!');
-    });
 }
 
 // Function to handle successful QR code scan
