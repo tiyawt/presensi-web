@@ -6,13 +6,10 @@ use App\Models\Course;
 use App\Models\Classroom;
 use Illuminate\Http\Request;
 use App\Models\Qrcode as QrcodeModel;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Generator;
-
-
 
 class QrcodeController extends Controller
 {
@@ -24,8 +21,6 @@ class QrcodeController extends Controller
         return ('this is qrcode.com');
     }
 
-
-
     /**
      * Show the form for creating a new resource.
      */
@@ -34,72 +29,71 @@ class QrcodeController extends Controller
         $user = Auth::user();
         $courses = Course::all();
         $classrooms = Classroom::all();
-        $latestQrcode = QrcodeModel::latest()->first(); // Mengambil QR code terakhir
+        
+        // Mengambil QR code terakhir beserta relasi course & classroom
+        $latestQrcode = QrcodeModel::with(['course', 'classroom'])->latest()->first();
 
         return view('teacher.qrcode.create', compact('user', 'courses', 'classrooms', 'latestQrcode'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage (Teacher).
      */
     public function store(Request $request)
     {
-        // Validasi input
+        // 1. Validasi input
         $validatedData = $request->validate([
             'course_id' => 'required|integer',
             'classroom_id' => 'required|integer',
             'lesson_time' => 'required',
         ]);
 
-        // Tentukan path untuk QR code
-        $qrCodePath = 'qrcodes/' . uniqid() . '.svg';
-        // Pastikan direktori ada
-        if (!file_exists(public_path('qrcodes'))) {
-            mkdir(public_path('qrcodes'), 0755, true);
-        }
-
         DB::beginTransaction();
         try {
-            // Simpan data QR Code ke tabel dan ambil entry yang baru dibuat
+            // 2. Simpan entry awal ke database
             $qrcodeEntry = QrcodeModel::create([
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
-                'qr_code_path' => $qrCodePath,  // Path sementara
+                'qr_code_path' => '', // Placeholder sementara
             ]);
 
-            // Setelah entry disimpan, buat $qrData dengan ID QR Code
+            // 3. Buat isi string data QR Code
             $qrData = $qrcodeEntry->id . ' ' . $validatedData['lesson_time'];
 
-            // Generate QR code using QrCode facade dengan $qrData
+            // 4. Generate QR Code langsung di memory sebagai Data URI SVG (Tanpa menulis file ke public_path)
             $qrcode = new Generator;
-            $qrcode->format('svg')
-                ->size(300)
-                ->generate($qrData, public_path($qrCodePath));
+            $qrSvg = $qrcode->format('svg')->size(300)->generate($qrData);
+            $qrCodeDataUri = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
 
-            // Update path setelah QR code dibuat
-            $qrcodeEntry->update(['qr_code_path' => $qrCodePath]);
+            // 5. Update kolom qr_code_path dengan Data URI
+            $qrcodeEntry->update(['qr_code_path' => $qrCodeDataUri]);
 
             DB::commit();
 
-            return redirect()->route('dashboard.qrcode.create')
-                ->with('success', 'QR Code created successfully')
-                ->with('qr_code_path', $qrCodePath)
-                ->with('id', $qrData);  // Mengirimkan id dan lesson_time sebagai session
+            // 6. Redirect ke halaman penampil QR Code
+            return redirect()->route('dashboard.attendance.qrcode')
+                ->with('success', 'QR Code berhasil dibuat!')
+                ->with('qr_code_path', $qrCodeDataUri)
+                ->with('id', $qrData);
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());
-            return redirect()->back()->withInput()->withErrors(['error' => 'Failed to create QR Code. Please try again.']);
+
+            // Mengembalikan pesan error asli agar mudah untuk debugging
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $e->getMessage()]);
         }
     }
-
-
 
     public function indexTeacherQr()
     {
         $user = Auth::User();
-        $courses = Course::all(); // Mengambil semua data dari tabel 'course'
-        $classrooms = Classroom::all(); // Mengambil semua data dari tabel 'classroom'
+        $courses = Course::all();
+        $classrooms = Classroom::all();
+        
         return view('admin.attendance.create', [
             'courses' => $courses,
             'classrooms' => $classrooms
@@ -111,13 +105,13 @@ class QrcodeController extends Controller
         $user = Auth::User();
         $courses = Course::all();
         $classrooms = Classroom::all();
-        $latestQrcode = QrcodeModel::latest()->first(); // Mengambil QR code terakhir
+        $latestQrcode = QrcodeModel::with(['course', 'classroom'])->latest()->first();
 
         return view('admin.attendance.qrcode', compact('user', 'courses', 'classrooms', 'latestQrcode'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage (Admin/Teacher QR).
      */
     public function storeTeacherQr(Request $request)
     {
@@ -125,84 +119,61 @@ class QrcodeController extends Controller
         $validatedData = $request->validate([
             'course_id' => 'required|integer',
             'classroom_id' => 'required|integer',
-            'lesson_time' => 'required|date',
+            'lesson_time' => 'required',
         ]);
-
-        // Tentukan path untuk QR code
-        $qrCodePath = 'qrcodes/' . uniqid() . '.png';
-
-        // Pastikan direktori ada
-        if (!file_exists(public_path('qrcodes'))) {
-            mkdir(public_path('qrcodes'), 0755, true);
-        }
 
         DB::beginTransaction();
         try {
-            // Simpan data QR Code ke tabel dan ambil entry yang baru dibuat
             $qrcodeEntry = QrcodeModel::create([
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
-                'qr_code_path' => $qrCodePath,  // Path sementara
+                'qr_code_path' => '',
             ]);
 
-            // Setelah entry disimpan, buat $qrData dengan ID QR Code
             $qrData = $qrcodeEntry->id . ' ' . $validatedData['lesson_time'];
 
-            // Generate QR code using QrCode facade dengan $qrData
+            // Generate SVG Data URI tanpa disk write
             $qrcode = new Generator;
-            $qrcode->format('png')
-                ->size(300)
-                ->generate($qrData, public_path($qrCodePath));
+            $qrSvg = $qrcode->format('svg')->size(300)->generate($qrData);
+            $qrCodeDataUri = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
 
-            // Update path setelah QR code dibuat
-            $qrcodeEntry->update(['qr_code_path' => $qrCodePath]);
+            $qrcodeEntry->update(['qr_code_path' => $qrCodeDataUri]);
 
             DB::commit();
 
             return redirect()->route('dashboard.attendance.qrcode')
-                ->with('success', 'QR Code created successfully')
-                ->with('qr_code_path', $qrCodePath)
-                ->with('id', $qrData);  // Mengirimkan id dan lesson_time sebagai session
+                ->with('success', 'QR Code berhasil dibuat!')
+                ->with('qr_code_path', $qrCodeDataUri)
+                ->with('id', $qrData);
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());
-            return redirect()->back()->withInput()->withErrors(['error' => 'Failed to create QR Code. Please try again.']);
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $e->getMessage()]);
         }
     }
-
-
-
-
-
-
 
     /**
      * Display the specified resource.
      */
-    public function show(Qrcode $qrcode) {}
+    public function show(QrcodeModel $qrcode) {}
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Qrcode $qrcode)
-    {
-        //
-    }
+    public function edit(QrcodeModel $qrcode) {}
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Qrcode $qrcode)
-    {
-        //
-    }
+    public function update(Request $request, QrcodeModel $qrcode) {}
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Qrcode $qrcode)
-    {
-        //
-    }
+    public function destroy(QrcodeModel $qrcode) {}
 }
