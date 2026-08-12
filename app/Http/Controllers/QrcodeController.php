@@ -21,23 +21,22 @@ class QrcodeController extends Controller
      */
     public function index()
     {
-        return('this is qrcode.com');
+        return ('this is qrcode.com');
     }
 
-    
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
-    {   
+    {
         $user = Auth::user();
         $courses = Course::all();
         $classrooms = Classroom::all();
         $latestQrcode = QrcodeModel::latest()->first(); // Mengambil QR code terakhir
 
         return view('teacher.qrcode.create', compact('user', 'courses', 'classrooms', 'latestQrcode'));
-        
     }
 
     /**
@@ -47,14 +46,13 @@ class QrcodeController extends Controller
     {
         // Validasi input
         $validatedData = $request->validate([
-            'course_id' => 'required|integer', 
-            'classroom_id' => 'required|integer', 
-            'lesson_time' => 'required|date',
+            'course_id' => 'required|integer',
+            'classroom_id' => 'required|integer',
+            'lesson_time' => 'required',
         ]);
 
         // Tentukan path untuk QR code
-        $qrCodePath = 'qrcodes/' . uniqid() . '.png';
-
+        $qrCodePath = 'qrcodes/' . uniqid() . '.svg';
         // Pastikan direktori ada
         if (!file_exists(public_path('qrcodes'))) {
             mkdir(public_path('qrcodes'), 0755, true);
@@ -75,7 +73,7 @@ class QrcodeController extends Controller
 
             // Generate QR code using QrCode facade dengan $qrData
             $qrcode = new Generator;
-            $qrcode->format('png')
+            $qrcode->format('svg')
                 ->size(300)
                 ->generate($qrData, public_path($qrCodePath));
 
@@ -97,7 +95,8 @@ class QrcodeController extends Controller
 
 
 
-    public function indexTeacherQr() {
+    public function indexTeacherQr()
+    {
         $user = Auth::User();
         $courses = Course::all(); // Mengambil semua data dari tabel 'course'
         $classrooms = Classroom::all(); // Mengambil semua data dari tabel 'classroom'
@@ -115,7 +114,6 @@ class QrcodeController extends Controller
         $latestQrcode = QrcodeModel::latest()->first(); // Mengambil QR code terakhir
 
         return view('admin.attendance.qrcode', compact('user', 'courses', 'classrooms', 'latestQrcode'));
-        
     }
 
     /**
@@ -125,8 +123,8 @@ class QrcodeController extends Controller
     {
         // Validasi input
         $validatedData = $request->validate([
-            'course_id' => 'required|integer', 
-            'classroom_id' => 'required|integer', 
+            'course_id' => 'required|integer',
+            'classroom_id' => 'required|integer',
             'lesson_time' => 'required|date',
         ]);
 
@@ -182,10 +180,7 @@ class QrcodeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Qrcode $qrcode)
-    {
-    
-    }
+    public function show(Qrcode $qrcode) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -210,6 +205,4 @@ class QrcodeController extends Controller
     {
         //
     }
-
-    
 }
