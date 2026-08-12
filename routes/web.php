@@ -145,11 +145,11 @@ Route::middleware('auth')->group(function () {
 
 
         // Guru create qr code
-        Route::get('student/qrcode/create/', [QRCodeController::class, 'create'])
+        Route::get('student/qrcode/create/', [QrcodeController::class, 'create'])
             ->middleware('role:teacher')
             ->name('qrcode.create');
             
-        Route::post('/student/qrcode', [QRCodeController::class, 'store'])
+        Route::post('/student/qrcode', [QrcodeController::class, 'store'])
             ->middleware('role:teacher')
             ->name('qrcode.store');
 
@@ -360,11 +360,11 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin')
         ->name('attendance.create');
 
-        Route::get('teacher/qrcode/create/', [QRCodeController::class, 'createTeacherQr'])
+        Route::get('teacher/qrcode/create/', [QrcodeController::class, 'createTeacherQr'])
             ->middleware('role:admin')
             ->name('attendance.qrcode');
 
-        Route::post('/teacher/qrcode', [QRCodeController::class, 'storeTeacherQr'])
+        Route::post('/teacher/qrcode', [QrcodeController::class, 'storeTeacherQr'])
             ->middleware('role:admin')
             ->name('attendance.store');
 
