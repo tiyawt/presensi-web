@@ -29,7 +29,7 @@ class QrcodeController extends Controller
         $user = Auth::user();
         $courses = Course::all();
         $classrooms = Classroom::all();
-        
+
         // Mengambil QR code terakhir beserta relasi course & classroom
         $latestQrcode = QrcodeModel::with(['course', 'classroom'])->latest()->first();
 
@@ -41,7 +41,7 @@ class QrcodeController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validasi input
+        // Validasi input
         $validatedData = $request->validate([
             'course_id' => 'required|integer',
             'classroom_id' => 'required|integer',
@@ -50,38 +50,33 @@ class QrcodeController extends Controller
 
         DB::beginTransaction();
         try {
-            // 2. Simpan entry awal ke database
+            // 1. Buat entry di database
             $qrcodeEntry = QrcodeModel::create([
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
-                'qr_code_path' => '', // Placeholder sementara
+                'qr_code_path' => '',
             ]);
 
-            // 3. Buat isi string data QR Code
             $qrData = $qrcodeEntry->id . ' ' . $validatedData['lesson_time'];
 
-            // 4. Generate QR Code langsung di memory sebagai Data URI SVG (Tanpa menulis file ke public_path)
+            // 2. Generate SVG Base64 Data URI
             $qrcode = new Generator;
             $qrSvg = $qrcode->format('svg')->size(300)->generate($qrData);
             $qrCodeDataUri = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
 
-            // 5. Update kolom qr_code_path dengan Data URI
+            // 3. Simpan Data URI LANGSUNG ke Database
             $qrcodeEntry->update(['qr_code_path' => $qrCodeDataUri]);
 
             DB::commit();
 
-            // 6. Redirect ke halaman penampil QR Code
+            // 4. REDIRECT BERSIH (HANYA KIRIM PESAN SINGKAT, TANPA BASE64)
             return redirect()->route('dashboard.attendance.qrcode')
-                ->with('success', 'QR Code berhasil dibuat!')
-                ->with('qr_code_path', $qrCodeDataUri)
-                ->with('id', $qrData);
-
+                ->with('success', 'QR Code berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());
 
-            // Mengembalikan pesan error asli agar mudah untuk debugging
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['error' => 'Gagal membuat QR Code: ' . $e->getMessage()]);
@@ -93,7 +88,7 @@ class QrcodeController extends Controller
         $user = Auth::User();
         $courses = Course::all();
         $classrooms = Classroom::all();
-        
+
         return view('admin.attendance.create', [
             'courses' => $courses,
             'classrooms' => $classrooms
@@ -102,9 +97,11 @@ class QrcodeController extends Controller
 
     public function createTeacherQr()
     {
-        $user = Auth::User();
+        $user = Auth::user();
         $courses = Course::all();
         $classrooms = Classroom::all();
+
+        // Ambil QR Code paling akhir yang baru saja dibuat
         $latestQrcode = QrcodeModel::with(['course', 'classroom'])->latest()->first();
 
         return view('admin.attendance.qrcode', compact('user', 'courses', 'classrooms', 'latestQrcode'));
@@ -146,7 +143,6 @@ class QrcodeController extends Controller
                 ->with('success', 'QR Code berhasil dibuat!')
                 ->with('qr_code_path', $qrCodeDataUri)
                 ->with('id', $qrData);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());
