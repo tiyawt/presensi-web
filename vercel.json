@@ -10,12 +10,8 @@
     },
     "routes": [
         {
-            "src": "/build/(.*)",
-            "dest": "/public/build/$1"
-        },
-        {
-            "src": "/favicon.ico",
-            "dest": "/public/favicon.ico"
+            "src": "/(.*\\.(css|js|mjs|json|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|map|mp4|webm))",
+            "dest": "/public/$1"
         },
         {
             "src": "/(.*)",
