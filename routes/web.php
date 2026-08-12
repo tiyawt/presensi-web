@@ -39,7 +39,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::prefix('dashboard')->name('dashboard.')->group(function(){
-
+        Route::get('/debug-env', function () {
+            return response()->json([
+                'db_database' => env('DB_DATABASE') ? 'SET, panjang: ' . strlen(env('DB_DATABASE')) : 'KOSONG',
+                'db_auth_token' => env('DB_AUTH_TOKEN') ? 'SET, panjang: ' . strlen(env('DB_AUTH_TOKEN')) : 'KOSONG',
+                'db_connection' => env('DB_CONNECTION'),
+                'config_db_connection' => config('database.default'),
+                'config_db_url' => config('database.connections.libsql.url') ?? 'null / connection tidak ada',
+            ]);
+        });
         // Form Admin
         Route::get('admin/index', [AttendanceController::class, 'index'])
         ->middleware('role:admin')
