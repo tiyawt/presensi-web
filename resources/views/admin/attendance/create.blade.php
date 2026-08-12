@@ -311,25 +311,25 @@
 	<script src="{{asset('lte/vendors/starrr/dist/starrr.js')}}"></script>
 	<!-- Custom Theme Scripts -->
 
-  <!-- ... (bagian tag <script> vendor lte/vendors/... lainnya) ... -->
-
-    <!-- 1. Impor Library Tambahan untuk QR Code -->
+  <!-- 1. Impor Library Tambahan untuk QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
-    <!-- 2. Taruh Script Perbaikan di Dalam Tag <script> -->
+    <!-- 2. Script Logika QR Code -->
     <script>
       let html5QrCode;
 
       function initializeScanner() {
-          if (typeof Html5Qrcode === "undefined") {
-              console.error("Html5Qrcode is not defined. Retrying in 1 second...");
-              setTimeout(initializeScanner, 1000);
+          // Pengecekan jika library QRCode dari CDN belum siap
+          if (typeof QRCode === "undefined") {
+              console.warn("Library QRCode belum siap, mencoba ulang dalam 500ms...");
+              setTimeout(initializeScanner, 500);
               return;
           }
 
+          // Inisialisasi Scanner (jika elemen #reader ada di halaman)
           const readerElement = document.getElementById("reader");
-          if (readerElement) {
+          if (readerElement && typeof Html5Qrcode !== "undefined") {
               html5QrCode = new Html5Qrcode("reader");
 
               html5QrCode.start(
@@ -342,6 +342,7 @@
               });
           }
 
+          // Jalankan Generator QR Code
           generateQRCode('25 2024-10-09T13:45');
       }
 
@@ -426,7 +427,7 @@
       }
 
       function onScanError(errorMessage) {
-          // Callback saat pencarian QR berjalan
+          // Callback scan error
       }
 
       document.addEventListener('DOMContentLoaded', initializeScanner);
