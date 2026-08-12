@@ -38,21 +38,27 @@ class RolePermissionSeeder extends Seeder
         $studentRole = Role::firstOrCreate(['name' => 'student']);
 
         // Assign permissions to roles
-        $adminRole->givePermissionTo(Permission::all());
+        foreach (Permission::all() as $permission) {
+            $adminRole->givePermissionTo($permission);
+        }
 
-        $teacherRole->givePermissionTo([
+        foreach ([
             'view schedules',
             'view students',
             'create qrcode',
             'edit presence',
             'delete presence'
-        ]);
+        ] as $permission) {
+            $teacherRole->givePermissionTo($permission);
+        }
 
-        $studentRole->givePermissionTo([
+        foreach ([
             'view schedules',
             'view status presence',
             'scan qrcode'
-        ]);
+        ] as $permission) {
+            $studentRole->givePermissionTo($permission);
+        }
 
         // Create users and assign roles
         $user = User::firstOrCreate([
