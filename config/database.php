@@ -111,12 +111,12 @@ return [
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
-        'turso' => [
-            'driver' => 'turso-http',
-            'url' => env('DB_URL', env('DB_SYMBOLIC_LINK')),
-            'database' => env('DB_DATABASE', 'turso'),
-            'auth_token' => env('DB_AUTH_TOKEN'),
-            'method' => 'http',
+        'libsql' => [
+            'driver' => 'libsql',
+            'url' => env('DB_DATABASE', ''),
+            'authToken' => env('DB_AUTH_TOKEN', ''),
+            'database' => null,
+            'prefix' => '',
         ],
 
     ],
