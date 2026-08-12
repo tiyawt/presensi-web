@@ -310,10 +310,6 @@
 	<!-- starrr -->
 	<script src="{{asset('lte/vendors/starrr/dist/starrr.js')}}"></script>
 	<!-- Custom Theme Scripts -->
-
-
-
-  <script src="{{asset('js/scan-teacher.js')}}"></script>
     
   </body>
 

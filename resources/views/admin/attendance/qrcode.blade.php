@@ -295,12 +295,7 @@
 	<!-- Custom Theme Scripts -->
 	<script src="{{asset('lte/build/js/custom.min.js')}}"></script>
     <!-- Include the html5-qrcode library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://unpkg.com/html5-qrcode@latest/minified/html5-qrcode.min.js"></script>
-
-
-    <!-- Include the qrcodes.js -->
-    <script src="{{asset('js/scan-teacher.js')}}"></script>
+  
     
   </body>
 
