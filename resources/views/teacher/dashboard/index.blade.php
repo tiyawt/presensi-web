@@ -11,7 +11,6 @@
   <link rel="icon" href="https://fonts.gstatic.com/s/i/materialicons/school/v6/24px.svg" type="image/svg+xml">
   <title>SMP 3 Muhammadiyah | Halaman Guru</title>
 
-
   <!-- Bootstrap -->
   <link href="{{asset('lte/vendors/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
   <!-- Font Awesome -->
@@ -20,7 +19,6 @@
   <link href="{{asset('lte/vendors/nprogress/nprogress.css')}}" rel="stylesheet">
   <!-- iCheck -->
   <link href="{{asset('lte/vendors/iCheck/skins/flat/green.css')}}" rel="stylesheet">
-
   <!-- bootstrap-progressbar -->
   <link href="{{asset('lte/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css')}}" rel="stylesheet">
   <!-- JQVMap -->
@@ -37,10 +35,6 @@
   <link href="{{asset('lte/vendors/switchery/dist/switchery.min.css')}}" rel="stylesheet">
   <!-- starrr -->
   <link href="{{asset('lte/vendors/starrr/dist/starrr.css')}}" rel="stylesheet">
-
-
-
-
 </head>
 
 <body class="nav-md">
@@ -50,7 +44,7 @@
       <div class="col-md-3 left_col">
         <div class="left_col scroll-view">
           <div class="navbar nav_title" style="border: 0;">
-            <a href={{route('dashboard.teacher.index')}} class="site_title"><i class="fa fa-server"></i><span> Form Guru</span></a>
+            <a href="{{route('dashboard.teacher.index')}}" class="site_title"><i class="fa fa-server"></i><span> Form Guru</span></a>
           </div>
 
           <div class="clearfix"></div>
@@ -59,8 +53,6 @@
           <div class="profile clearfix">
             <div class="profile_pic">
               <img src="{{ $user->photo ? asset('storage/' . $user->photo) : asset('images/default-image.jpg') }}" alt="Photo User" class="img-circle profile_img">
-
-
             </div>
             <div class="profile_info">
               <span>Welcome,</span>
@@ -72,26 +64,17 @@
           <br />
 
           <!-- sidebar menu -->
-
           <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
             <div class="menu_section">
               <h3>General</h3>
-
               <ul class="nav side-menu">
-
-
                 <li><a href="{{route('dashboard.teacher.index')}}"><i class="fa fa-plus"></i> Buat Qr Code Kehadiran</a></li>
                 <li><a href="{{route('dashboard.teacher_scan.scan')}}"><i class="fa fa-qrcode"></i> Scan Qr</a></li>
                 <li><a href="{{route('dashboard.student_attend.index')}}"><i class="fa fa-list"></i> Kehadiran Siswa</a></li>
                 <li><a href="{{route('dashboard.teacher_attend.index')}}"><i class="fa fa-list"></i> Kehadiran Guru</a></li>
                 <li><a href="{{route('dashboard.teacher_schedule.index')}}"><i class="fa fa-clipboard"></i> Jadwal Pelajaran </a></li>
-
               </ul>
             </div>
-
-
-
-
           </div>
           <!-- /sidebar menu -->
 
@@ -129,21 +112,13 @@
               <li class="nav-item dropdown open" style="padding-left: 15px;">
                 <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
                   <img src="{{ $user->photo ? asset('storage/' . $user->photo) : asset('images/default-image.jpg') }}" alt="">{{$user->name}}
-
-
                 </a>
                 <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
-                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                  <form id="logout-form-nav" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                   </form>
-
-                  <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+                  <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form-nav').submit();"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
                 </div>
-              </li>
-
-              <li role="presentation" class="nav-item dropdown open">
-
-
               </li>
             </ul>
           </nav>
@@ -158,8 +133,6 @@
             <div class="title_left">
               <h3>Buat Qrcode Kehadiran</h3>
             </div>
-
-
           </div>
           <div class="clearfix"></div>
           <div class="row">
@@ -168,12 +141,8 @@
                 <div class="x_title">
                   <h2>Buat Qrcode Kehadiran <small>pada form dibawah ini</small></h2>
                   <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
-                    </li>
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a></li>
                   </ul>
                   <div class="clearfix"></div>
                 </div>
@@ -190,8 +159,8 @@
                   </div>
                   @endif
 
-
-                  <form id="form-create-qrcode" action="{{ route('dashboard.qrcode.store') }}" method="POST">
+                  <!-- PERBAIKAN PENTING: Tambahkan id="demo-form2" data-parsley-validate class="form-horizontal form-label-left" -->
+                  <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left" action="{{ route('dashboard.qrcode.store') }}" method="POST">
                     @csrf
                     <div class="item form-group">
                       <label class="col-form-label col-md-3 col-sm-3 label-align" for="course_id">Nama Pelajaran <span class="required">*</span></label>
@@ -220,29 +189,22 @@
                     <div class="item form-group">
                       <label class="col-form-label col-md-3 col-sm-3 label-align" for="lesson_time">Waktu Pelajaran <span class="required">*</span></label>
                       <div class="col-md-6 col-sm-6 ">
-                        <input type="datetime-local" name="lesson_time" id="lesson_time" class="form-control" required>
+                        <input type="datetime-local" name="lesson_time" id="lesson_time" class="form-control" required="required">
                       </div>
                     </div>
                     <div class="ln_solid"></div>
                     <div class="item form-group">
                       <div class="col-md-6 col-sm-6 offset-md-3">
-
                         <button class="btn btn-primary" type="reset">Reset</button>
                         <button type="submit" class="btn btn-success">Submit</button>
                       </div>
                     </div>
                   </form>
 
-
-
                 </div>
               </div>
             </div>
           </div>
-
-
-
-
 
         </div>
       </div>
@@ -296,18 +258,9 @@
   <script src="{{asset('lte/vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js')}}"></script>
   <!-- starrr -->
   <script src="{{asset('lte/vendors/starrr/dist/starrr.js')}}"></script>
+
   <!-- Custom Theme Scripts -->
   <script src="{{asset('lte/build/js/custom.min.js')}}"></script>
-  <!-- Include the QRCode.js library -->
-  <script src="https://unpkg.com/qrcode@1.5.1/build/qrcode.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      // Inisialisasi Parsley dengan benar agar tidak error 'isValid'
-      $('#form-create-qrcode').parsley();
-    });
-  </script>
-
-
 
 </body>
 
