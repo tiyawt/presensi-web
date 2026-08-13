@@ -64,7 +64,7 @@ class QrcodeController extends Controller
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
-                'qr_code_path' => "null",
+                'qr_code_path' => 'pending',
             ]);
             $qrcode->update(['qr_code_path' => (string) $qrcode->id]);
 
@@ -136,7 +136,7 @@ class QrcodeController extends Controller
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
-                'qr_code_path' => null,
+                'qr_code_path' => 'pending',
             ]);
             $qrcode->update(['qr_code_path' => (string) $qrcode->id]);
 
