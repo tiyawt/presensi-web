@@ -77,9 +77,13 @@ class QrcodeController extends Controller
             DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());
 
+            // Batasi panjang pesan sebelum di-flash ke session, supaya
+            // cookie session tidak membengkak walau pesan exception aslinya panjang.
+            $shortMessage = \Illuminate\Support\Str::limit($e->getMessage(), 300);
+
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $e->getMessage()]);
+                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $shortMessage]);
         }
     }
 
@@ -145,9 +149,13 @@ class QrcodeController extends Controller
             DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());
 
+            // Batasi panjang pesan sebelum di-flash ke session, supaya
+            // cookie session tidak membengkak walau pesan exception aslinya panjang.
+            $shortMessage = \Illuminate\Support\Str::limit($e->getMessage(), 300);
+
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $e->getMessage()]);
+                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $shortMessage]);
         }
     }
 
