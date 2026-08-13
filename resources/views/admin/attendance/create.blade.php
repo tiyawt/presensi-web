@@ -199,6 +199,19 @@
 
                   <form action="{{ route('dashboard.attendance.store') }}" method="POST">
                     @csrf
+                    @if(session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+
+                    @if($errors->any())
+                    <div class="alert alert-danger">
+                      <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                      </ul>
+                    </div>
+                    @endif
                     <div class="item form-group">
                       <label class="col-form-label col-md-3 col-sm-3 label-align" for="course_id">Nama Pelajaran <span class="required">*</span></label>
                       <div class="col-md-6 col-sm-6 ">
