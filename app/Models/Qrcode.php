@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Qrcode extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     // Tambahkan 3 properti ini agar LibSQL mendeteksi Auto Increment dengan benar
     protected $primaryKey = 'id';

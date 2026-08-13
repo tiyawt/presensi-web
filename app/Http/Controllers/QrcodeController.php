@@ -56,29 +56,28 @@ class QrcodeController extends Controller
         ]);
 
         try {
-            // Gunakan closure DB::transaction untuk menangani commit & rollback otomatis
-            DB::transaction(function () use ($validatedData) {
-                // Format data unik untuk isi QR (cukup 1x insert tanpa perlu update ID)
-                $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
+            // Buat string unik tanpa butuh ID DB (menghindari query update terpisah)
+            $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
 
-                QrcodeModel::create([
-                    'course_id' => $validatedData['course_id'],
-                    'classroom_id' => $validatedData['classroom_id'],
-                    'lesson_time' => $validatedData['lesson_time'],
-                    'qr_code_path' => $qrData,
-                ]);
-            });
+            QrcodeModel::create([
+                'course_id' => $validatedData['course_id'],
+                'classroom_id' => $validatedData['classroom_id'],
+                'lesson_time' => $validatedData['lesson_time'],
+                'qr_code_path' => $qrData,
+            ]);
 
             return redirect()->route('dashboard.qrcode.create')
                 ->with('success', 'QR Code berhasil dibuat!');
-        } catch (\Exception $e) {
-            Log::error('QR Code creation failed: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            // Ambil exception terdalam untuk melihat error SQL asli dari Turso
+            $previous = $e->getPrevious();
+            $errorMessage = $previous ? $previous->getMessage() : $e->getMessage();
 
-            $shortMessage = \Illuminate\Support\Str::limit($e->getMessage(), 300);
+            Log::error('QR Code creation failed: ' . $errorMessage);
 
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $shortMessage]);
+                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $errorMessage]);
         }
     }
 
