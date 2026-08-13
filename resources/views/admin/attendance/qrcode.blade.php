@@ -225,7 +225,7 @@
                     <div class="d-flex justify-content-center">
                       <div class="card" style="width: 18rem;">
                         @if(isset($qrCodeImage) && $qrCodeImage)
-                        <img src="{{ $qrCodeImage }}" alt="QR Code">
+                        <img src="{{ $qrCodeImage }}" alt="Generated QR Code">
                         @endif
                         <div class="card-body">
                           <h5 class="card-title">Course: {{ $latestQrcode->course->name ?? 'N/A' }}</h5>

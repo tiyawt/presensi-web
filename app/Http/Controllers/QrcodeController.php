@@ -102,10 +102,10 @@ class QrcodeController extends Controller
         // Ambil QR Code paling akhir
         $latestQrcode = QrcodeModel::with(['course', 'classroom'])->latest()->first();
 
-        // Generate gambar QR jika data qr_code_path ada
+        // Generate Base64 SVG secara ON-THE-FLY untuk tampilan saja
         $qrCodeImage = null;
         if ($latestQrcode && $latestQrcode->qr_code_path) {
-            $qrSvg = (new Generator)->format('svg')->size(300)->generate($latestQrcode->qr_code_path);
+            $qrSvg = (new \SimpleSoftwareIO\QrCode\Generator)->format('svg')->size(300)->generate($latestQrcode->qr_code_path);
             $qrCodeImage = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
         }
 
@@ -124,21 +124,21 @@ class QrcodeController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validatedData) {
-                $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
+            // Buat string teks pendek (TIDAK menyimpan Base64 SVG ke DB)
+            $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
 
-                QrcodeModel::create([
-                    'course_id' => $validatedData['course_id'],
-                    'classroom_id' => $validatedData['classroom_id'],
-                    'lesson_time' => $validatedData['lesson_time'],
-                    'qr_code_path' => $qrData,
-                ]);
-            });
+            // Murni 1x Insert tanpa DB::beginTransaction & tanpa update berulang
+            QrcodeModel::create([
+                'course_id' => $validatedData['course_id'],
+                'classroom_id' => $validatedData['classroom_id'],
+                'lesson_time' => $validatedData['lesson_time'],
+                'qr_code_path' => $qrData,
+            ]);
 
             return redirect()->route('dashboard.attendance.qrcode')
                 ->with('success', 'QR Code berhasil dibuat!');
-        } catch (\Exception $e) {
-            Log::error('QR Code creation failed: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            Log::error('Admin QR creation failed: ' . $e->getMessage());
 
             $shortMessage = \Illuminate\Support\Str::limit($e->getMessage(), 300);
 
@@ -147,7 +147,6 @@ class QrcodeController extends Controller
                 ->withErrors(['error' => 'Gagal membuat QR Code: ' . $shortMessage]);
         }
     }
-
     /**
      * Display the specified resource.
      */

@@ -258,9 +258,6 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin')
         ->name('admin_list.storePassword');
 
-        Route::post('/admin_list/create', [AdminController::class, 'store'])
-        ->middleware('role:admin')
-        ->name('admin_list.store');
 
         Route::get('/admin/edit/{id}', [AdminController::class, 'edit'])
         ->middleware('role:admin')
@@ -275,10 +272,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/teacher_list/show/index', [TeacherController::class, 'indexListTeacher'])
         ->middleware('role:admin')
         ->name('teacher_list.index');
-
-        Route::post('/teacher_list/create', [TeacherController::class, 'store'])
-        ->middleware('role:admin')
-        ->name('teacher_list.store');
 
         Route::get('/teacher_list/reset-password/{id}', [TeacherController::class, 'resetPassword'])
         ->middleware('role:admin')
@@ -314,10 +307,6 @@ Route::middleware('auth')->group(function () {
        Route::get('/student_list/show/index', [StudentController::class, 'indexListStudent'])
        ->middleware('role:admin')
        ->name('student_list.index');
-
-       Route::post('/student_list/create', [StudentController::class, 'store'])
-       ->middleware('role:admin')
-       ->name('student_list.store');
 
        Route::get('/student_list/reset-password/{id}', [StudentController::class, 'resetPassword'])
        ->middleware('role:admin')
