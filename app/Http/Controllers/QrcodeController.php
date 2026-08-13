@@ -30,14 +30,17 @@ class QrcodeController extends Controller
         $courses = Course::all();
         $classrooms = Classroom::all();
 
-        // Mengambil QR code terakhir beserta relasi course & classroom
-        $latestQrcode = QrcodeModel::with(['course', 'classroom'])->latest()->first();
+        $createdId = session('created_qrcode_id');
 
-        // Generate gambar QR SAAT DITAMPILKAN saja (tidak disimpan ke DB),
-        // dari data pendek yang tersimpan di qr_code_path (mis. "5 2026-08-13T10:11").
+        if ($createdId) {
+            $latestQrcode = QrcodeModel::with(['course', 'classroom'])->find($createdId);
+        } else {
+            $latestQrcode = QrcodeModel::with(['course', 'classroom'])->orderBy('id', 'desc')->first();
+        }
+
         $qrCodeImage = null;
         if ($latestQrcode && $latestQrcode->qr_code_path) {
-            $qrSvg = (new Generator)->format('svg')->size(300)->generate($latestQrcode->qr_code_path);
+            $qrSvg = (new \SimpleSoftwareIO\QrCode\Generator)->format('svg')->size(300)->generate($latestQrcode->qr_code_path);
             $qrCodeImage = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
         }
 
@@ -56,10 +59,9 @@ class QrcodeController extends Controller
         ]);
 
         try {
-            // Buat string unik tanpa butuh ID DB (menghindari query update terpisah)
             $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
 
-            QrcodeModel::create([
+            $qrcode = QrcodeModel::create([
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
@@ -67,17 +69,14 @@ class QrcodeController extends Controller
             ]);
 
             return redirect()->route('dashboard.qrcode.create')
-                ->with('success', 'QR Code berhasil dibuat!');
+                ->with('success', 'QR Code berhasil dibuat!')
+                ->with('created_qrcode_id', $qrcode->id);
         } catch (\Throwable $e) {
-            // Ambil exception terdalam untuk melihat error SQL asli dari Turso
-            $previous = $e->getPrevious();
-            $errorMessage = $previous ? $previous->getMessage() : $e->getMessage();
-
-            Log::error('QR Code creation failed: ' . $errorMessage);
+            Log::error('QR Code creation failed: ' . $e->getMessage());
 
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $errorMessage]);
+                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $e->getMessage()]);
         }
     }
 
@@ -99,10 +98,16 @@ class QrcodeController extends Controller
         $courses = Course::all();
         $classrooms = Classroom::all();
 
-        // Ambil QR Code paling akhir
-        $latestQrcode = QrcodeModel::with(['course', 'classroom'])->latest()->first();
+        // 1. Cek apakah ada ID QR yang baru saja dibuat dari session
+        $createdId = session('created_qrcode_id');
 
-        // Generate Base64 SVG secara ON-THE-FLY untuk tampilan saja
+        if ($createdId) {
+            $latestQrcode = QrcodeModel::with(['course', 'classroom'])->find($createdId);
+        } else {
+            // Fallback: Urutkan secara eksplisit berdasarkan ID terbesar (bukan timestamp latest())
+            $latestQrcode = QrcodeModel::with(['course', 'classroom'])->orderBy('id', 'desc')->first();
+        }
+
         $qrCodeImage = null;
         if ($latestQrcode && $latestQrcode->qr_code_path) {
             $qrSvg = (new \SimpleSoftwareIO\QrCode\Generator)->format('svg')->size(300)->generate($latestQrcode->qr_code_path);
@@ -124,27 +129,26 @@ class QrcodeController extends Controller
         ]);
 
         try {
-            // Buat string teks pendek (TIDAK menyimpan Base64 SVG ke DB)
             $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
 
-            // Murni 1x Insert tanpa DB::beginTransaction & tanpa update berulang
-            QrcodeModel::create([
+            // Simpan ke variabel agar kita bisa mengambil ID-nya
+            $qrcode = QrcodeModel::create([
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
                 'qr_code_path' => $qrData,
             ]);
 
+            // Kirim 'created_qrcode_id' ke session redirect
             return redirect()->route('dashboard.attendance.qrcode')
-                ->with('success', 'QR Code berhasil dibuat!');
+                ->with('success', 'QR Code berhasil dibuat!')
+                ->with('created_qrcode_id', $qrcode->id);
         } catch (\Throwable $e) {
             Log::error('Admin QR creation failed: ' . $e->getMessage());
 
-            $shortMessage = \Illuminate\Support\Str::limit($e->getMessage(), 300);
-
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $shortMessage]);
+                ->withErrors(['error' => 'Gagal membuat QR Code: ' . $e->getMessage()]);
         }
     }
     /**
