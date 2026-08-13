@@ -71,7 +71,7 @@ class QrcodeController extends Controller
             DB::commit();
 
             // 4. REDIRECT BERSIH (HANYA KIRIM PESAN SINGKAT, TANPA BASE64)
-            return redirect()->route('dashboard.attendance.qrcode')
+            return redirect()->route('dashboard.qrcode.create')
                 ->with('success', 'QR Code berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -140,9 +140,7 @@ class QrcodeController extends Controller
             DB::commit();
 
             return redirect()->route('dashboard.attendance.qrcode')
-                ->with('success', 'QR Code berhasil dibuat!')
-                ->with('qr_code_path', $qrCodeDataUri)
-                ->with('id', $qrData);
+                ->with('success', 'QR Code berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());

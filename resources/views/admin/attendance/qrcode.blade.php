@@ -214,7 +214,7 @@
                       <h2 class="text-center">Generated QR Code</h2>
                       <div class="d-flex justify-content-center">
                           <div class="card" style="width: 18rem;">
-                              <img src="{{ asset($latestQrcode->qr_code_path) }}" class="card-img-top" alt="QR Code">
+                              <img src="{{ $latestQrcode->qr_code_path }}" class="card-img-top" alt="QR Code">
                               <div class="card-body">
                                   <h5 class="card-title">Course: {{ $latestQrcode->course->name ?? 'N/A' }}</h5>
                                   <p class="card-text">Classroom: {{ $latestQrcode->classroom->name ?? 'N/A' }}</p>
