@@ -10,6 +10,11 @@ class Qrcode extends Model
 {
     use HasFactory, SoftDeletes;
 
+    // Tambahkan 3 properti ini agar LibSQL mendeteksi Auto Increment dengan benar
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
         'course_id',
         'classroom_id',
