@@ -59,14 +59,15 @@ class QrcodeController extends Controller
         ]);
 
         try {
-            $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
-
+            
             $qrcode = QrcodeModel::create([
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
-                'qr_code_path' => $qrData,
+                'qr_code_path' => "null",
             ]);
+            $qrcode->update(['qr_code_path' => (string) $qrcode->id]);
+
 
             return redirect()->route('dashboard.qrcode.create')
                 ->with('success', 'QR Code berhasil dibuat!')
@@ -129,15 +130,15 @@ class QrcodeController extends Controller
         ]);
 
         try {
-            $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
-
+            
             // Simpan ke variabel agar kita bisa mengambil ID-nya
             $qrcode = QrcodeModel::create([
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
-                'qr_code_path' => $qrData,
+                'qr_code_path' => null,
             ]);
+            $qrcode->update(['qr_code_path' => (string) $qrcode->id]);
 
             // Kirim 'created_qrcode_id' ke session redirect
             return redirect()->route('dashboard.attendance.qrcode')

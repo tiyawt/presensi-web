@@ -24,11 +24,10 @@ function initializeScanner() {
 function onScanSuccess(decodedText) {
     console.log('Scanned QR code data:', decodedText);
 
-    const qr_code_id = extractQrCodeId(decodedText);
-    console.log('Extracted QR code ID:', qr_code_id);
+    const qr_code_id = parseInt(decodedText.trim(), 10);
 
-    if (qr_code_id === null) {
-        alert('Error: Missing required data.');
+    if (isNaN(qr_code_id)) {
+        alert('Error: Invalid QR code format.');
         return;
     }
 
@@ -58,23 +57,9 @@ function onScanSuccess(decodedText) {
     });
 }
 
-// Function to extract qr_code_id from the QR code data
-function extractQrCodeId(decodedText) {
-    // Misalkan data QR code adalah "25 2024-10-09T13:45"
-    const parts = decodedText.split(' '); // Memisahkan bagian menggunakan spasi
-    const id = parseInt(parts[0], 10); // Mengambil bagian pertama sebagai ID
-
-    if (isNaN(id)) {
-        console.error('Invalid QR code ID:', decodedText);
-        return null; // Mengembalikan null jika ID tidak valid
-    }
-    return id; // Mengembalikan ID yang berhasil diekstrak
-}
-
 // Function to handle QR code scan errors
 function onScanError(errorMessage) {
     console.error('QR Code scan error:', errorMessage);
 }
 
-// Initialize the HTML5 QR code scanner when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initializeScanner);

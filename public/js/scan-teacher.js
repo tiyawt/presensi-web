@@ -19,24 +19,14 @@ function initializeScanner() {
         alert('Failed to start QR Code scanner. Please check your camera permissions.');
     });
 
-    // Generate a QR code for demonstration
-    QRCode.toCanvas(document.getElementById('qrcode'), '25 2024-10-09T13:45', function (error) {
-        if (error) console.error(error);
-        console.log('QR code generated!');
-    });
 }
 
 function onScanSuccess(decodedText) {
-    console.log('Scanned QR code data:', decodedText);
-
-    const qr_code_id = extractQrCodeId(decodedText);
-    console.log('Extracted QR code ID:', qr_code_id);
-
-    if (qr_code_id === null) {
+    const qr_code_id = parseInt(decodedText.trim(), 10);
+    if (isNaN(qr_code_id)) {
         alert('Error: Invalid QR code format.');
         return;
     }
-
     fetch('/dashboard/teacher/scan-qr', {
         method: 'POST',
         headers: {

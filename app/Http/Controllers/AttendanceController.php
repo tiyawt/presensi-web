@@ -107,14 +107,7 @@ class AttendanceController extends Controller
                 return response()->json(['error' => 'Data QR Code tidak ditemukan'], 422);
             }
 
-            // 1. CARI DAHULU BERDASARKAN qr_code_path (EXACT MATCH STRING QR)
-            $qrCode = Qrcode::where('qr_code_path', trim($scannedData))->latest()->first();
-
-            // 2. Jika tidak ketemu dan input berupa angka murni, cari berdasarkan ID
-            if (!$qrCode && is_numeric($scannedData)) {
-                $qrCode = Qrcode::find($scannedData);
-            }
-
+            $qrCode = Qrcode::find($scannedData);
             if (!$qrCode) {
                 return response()->json(['error' => 'QR Code tidak valid atau tidak ditemukan'], 404);
             }
@@ -181,14 +174,7 @@ class AttendanceController extends Controller
                 return response()->json(['error' => 'Data QR Code tidak ditemukan'], 422);
             }
 
-            // 1. CARI DAHULU BERDASARKAN qr_code_path (EXACT MATCH STRING QR)
-            $qrCode = Qrcode::where('qr_code_path', trim($scannedData))->latest()->first();
-
-            // 2. Jika tidak ketemu dan input berupa angka murni, cari berdasarkan ID
-            if (!$qrCode && is_numeric($scannedData)) {
-                $qrCode = Qrcode::find($scannedData);
-            }
-
+            $qrCode = Qrcode::find($scannedData);
             if (!$qrCode) {
                 return response()->json(['error' => 'QR Code tidak valid atau tidak ditemukan'], 404);
             }
