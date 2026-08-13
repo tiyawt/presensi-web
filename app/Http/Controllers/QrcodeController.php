@@ -33,7 +33,15 @@ class QrcodeController extends Controller
         // Mengambil QR code terakhir beserta relasi course & classroom
         $latestQrcode = QrcodeModel::with(['course', 'classroom'])->latest()->first();
 
-        return view('teacher.qrcode.create', compact('user', 'courses', 'classrooms', 'latestQrcode'));
+        // Generate gambar QR SAAT DITAMPILKAN saja (tidak disimpan ke DB),
+        // dari data pendek yang tersimpan di qr_code_path (mis. "5 2026-08-13T10:11").
+        $qrCodeImage = null;
+        if ($latestQrcode && $latestQrcode->qr_code_path) {
+            $qrSvg = (new Generator)->format('svg')->size(300)->generate($latestQrcode->qr_code_path);
+            $qrCodeImage = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
+        }
+
+        return view('teacher.qrcode.create', compact('user', 'courses', 'classrooms', 'latestQrcode', 'qrCodeImage'));
     }
 
     /**
@@ -60,17 +68,17 @@ class QrcodeController extends Controller
 
             $qrData = $qrcodeEntry->id . ' ' . $validatedData['lesson_time'];
 
-            // 2. Generate SVG Base64 Data URI
-            $qrcode = new Generator;
-            $qrSvg = $qrcode->format('svg')->size(300)->generate($qrData);
-            $qrCodeDataUri = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
-
-            // 3. Simpan Data URI LANGSUNG ke Database
-            $qrcodeEntry->update(['qr_code_path' => $qrCodeDataUri]);
+            // 2. Simpan data PENDEK saja ke database (bukan base64 SVG).
+            //    Gambar QR-nya di-generate ulang tiap kali halaman ditampilkan
+            //    (lihat method create()/createTeacherQr()), supaya tidak pernah
+            //    menyimpan/mengirim blob besar ke DB Turso maupun ke session.
+            $qrcodeEntry->update(['qr_code_path' => $qrData]);
 
             DB::commit();
 
-            // 4. REDIRECT BERSIH (HANYA KIRIM PESAN SINGKAT, TANPA BASE64)
+            // 3. REDIRECT BERSIH (HANYA KIRIM PESAN SINGKAT)
+            // Redirect ke halaman create milik teacher sendiri (role:teacher),
+            // BUKAN ke 'dashboard.attendance.qrcode' yang di-guard role:admin.
             return redirect()->route('dashboard.qrcode.create')
                 ->with('success', 'QR Code berhasil dibuat!');
         } catch (\Exception $e) {
@@ -78,7 +86,8 @@ class QrcodeController extends Controller
             Log::error('QR Code creation failed: ' . $e->getMessage());
 
             // Batasi panjang pesan sebelum di-flash ke session, supaya
-            // cookie session tidak membengkak walau pesan exception aslinya panjang.
+            // cookie session tidak membengkak (>4096 byte) walau pesan
+            // exception aslinya sangat panjang (misalnya berisi query/data).
             $shortMessage = \Illuminate\Support\Str::limit($e->getMessage(), 300);
 
             return redirect()->back()
@@ -143,14 +152,15 @@ class QrcodeController extends Controller
 
             DB::commit();
 
+            // Jangan flash qr_code_path/id ke session: datanya base64 (bisa >4KB)
+            // dan bikin Set-Cookie session ditolak browser (>4096 bytes).
+            // View sudah ambil data terbaru langsung dari $latestQrcode (query DB).
             return redirect()->route('dashboard.attendance.qrcode')
                 ->with('success', 'QR Code berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());
 
-            // Batasi panjang pesan sebelum di-flash ke session, supaya
-            // cookie session tidak membengkak walau pesan exception aslinya panjang.
             $shortMessage = \Illuminate\Support\Str::limit($e->getMessage(), 300);
 
             return redirect()->back()
