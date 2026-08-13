@@ -55,29 +55,23 @@ class QrcodeController extends Controller
             'lesson_time' => 'required',
         ]);
 
-        DB::beginTransaction();
         try {
-            // Instansiasi model baru
-            $qrcodeEntry = new QrcodeModel();
-            $qrcodeEntry->course_id = $validatedData['course_id'];
-            $qrcodeEntry->classroom_id = $validatedData['classroom_id'];
-            $qrcodeEntry->lesson_time = $validatedData['lesson_time'];
-            $qrcodeEntry->qr_code_path = '';
-            $qrcodeEntry->save(); // Simpan pertama kali untuk mendapatkan ID auto-increment
+            // Gunakan closure DB::transaction untuk menangani commit & rollback otomatis
+            DB::transaction(function () use ($validatedData) {
+                // Format data unik untuk isi QR (cukup 1x insert tanpa perlu update ID)
+                $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
 
-            // Ambil ID yang sudah ter-generate dari DB
-            $qrData = $qrcodeEntry->id . ' ' . $validatedData['lesson_time'];
-
-            // Update qr_code_path dengan data yang valid
-            $qrcodeEntry->qr_code_path = $qrData;
-            $qrcodeEntry->save();
-
-            DB::commit();
+                QrcodeModel::create([
+                    'course_id' => $validatedData['course_id'],
+                    'classroom_id' => $validatedData['classroom_id'],
+                    'lesson_time' => $validatedData['lesson_time'],
+                    'qr_code_path' => $qrData,
+                ]);
+            });
 
             return redirect()->route('dashboard.qrcode.create')
                 ->with('success', 'QR Code berhasil dibuat!');
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());
 
             $shortMessage = \Illuminate\Support\Str::limit($e->getMessage(), 300);
@@ -130,24 +124,21 @@ class QrcodeController extends Controller
             'lesson_time' => 'required',
         ]);
 
-        DB::beginTransaction();
         try {
-            $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . ' ' . $validatedData['lesson_time'];
+            DB::transaction(function () use ($validatedData) {
+                $qrData = $validatedData['classroom_id'] . '-' . $validatedData['course_id'] . '-' . time() . ' ' . $validatedData['lesson_time'];
 
-            // Cukup Lakukan 1x Insert ke DB
-            QrcodeModel::create([
-                'course_id' => $validatedData['course_id'],
-                'classroom_id' => $validatedData['classroom_id'],
-                'lesson_time' => $validatedData['lesson_time'],
-                'qr_code_path' => $qrData,
-            ]);
-
-            DB::commit();
+                QrcodeModel::create([
+                    'course_id' => $validatedData['course_id'],
+                    'classroom_id' => $validatedData['classroom_id'],
+                    'lesson_time' => $validatedData['lesson_time'],
+                    'qr_code_path' => $qrData,
+                ]);
+            });
 
             return redirect()->route('dashboard.attendance.qrcode')
                 ->with('success', 'QR Code berhasil dibuat!');
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error('QR Code creation failed: ' . $e->getMessage());
 
             $shortMessage = \Illuminate\Support\Str::limit($e->getMessage(), 300);
