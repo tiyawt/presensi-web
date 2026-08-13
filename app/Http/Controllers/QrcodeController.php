@@ -59,15 +59,29 @@ class QrcodeController extends Controller
         ]);
 
         try {
-            
             $qrcode = QrcodeModel::create([
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
                 'qr_code_path' => 'pending',
             ]);
-            $qrcode->update(['qr_code_path' => (string) $qrcode->id]);
 
+            // Workaround: driver LibSQL kadang tidak mengembalikan lastInsertId dengan benar,
+            // sehingga $qrcode->id bisa 0. Query ulang row yang baru dibuat secara eksplisit.
+            if (!$qrcode->id) {
+                $qrcode = QrcodeModel::where('course_id', $validatedData['course_id'])
+                    ->where('classroom_id', $validatedData['classroom_id'])
+                    ->where('lesson_time', $validatedData['lesson_time'])
+                    ->where('qr_code_path', 'pending')
+                    ->orderByDesc('id')
+                    ->first();
+            }
+
+            if (!$qrcode || !$qrcode->id) {
+                throw new \Exception('Gagal mendapatkan ID QR Code yang baru dibuat.');
+            }
+
+            $qrcode->update(['qr_code_path' => (string) $qrcode->id]);
 
             return redirect()->route('dashboard.qrcode.create')
                 ->with('success', 'QR Code berhasil dibuat!')
@@ -130,17 +144,30 @@ class QrcodeController extends Controller
         ]);
 
         try {
-            
-            // Simpan ke variabel agar kita bisa mengambil ID-nya
             $qrcode = QrcodeModel::create([
                 'course_id' => $validatedData['course_id'],
                 'classroom_id' => $validatedData['classroom_id'],
                 'lesson_time' => $validatedData['lesson_time'],
                 'qr_code_path' => 'pending',
             ]);
+
+            // Workaround: driver LibSQL kadang tidak mengembalikan lastInsertId dengan benar,
+            // sehingga $qrcode->id bisa 0. Query ulang row yang baru dibuat secara eksplisit.
+            if (!$qrcode->id) {
+                $qrcode = QrcodeModel::where('course_id', $validatedData['course_id'])
+                    ->where('classroom_id', $validatedData['classroom_id'])
+                    ->where('lesson_time', $validatedData['lesson_time'])
+                    ->where('qr_code_path', 'pending')
+                    ->orderByDesc('id')
+                    ->first();
+            }
+
+            if (!$qrcode || !$qrcode->id) {
+                throw new \Exception('Gagal mendapatkan ID QR Code yang baru dibuat.');
+            }
+
             $qrcode->update(['qr_code_path' => (string) $qrcode->id]);
 
-            // Kirim 'created_qrcode_id' ke session redirect
             return redirect()->route('dashboard.attendance.qrcode')
                 ->with('success', 'QR Code berhasil dibuat!')
                 ->with('created_qrcode_id', $qrcode->id);
