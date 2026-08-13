@@ -28,14 +28,22 @@
     <!-- Custom Theme Style -->
     <link href="{{asset('lte/build/css/custom.css')}}" rel="stylesheet">
 	<!-- bootstrap-wysiwyg -->
-	<link href="{{asset('ltevendors/google-code-prettify/bin/prettify.min.css')}}" rel="stylesheet">
-	<!-- Select2 -->
+	<link href="{{asset('lte/vendors/google-code-prettify/bin/prettify.min.css')}}" rel="stylesheet">
+  <!-- Select2 -->
 	<link href="{{asset('lte/vendors/select2/dist/css/select2.min.css')}}" rel="stylesheet">
 	<!-- Switchery -->
 	<link href="{{asset('lte/vendors/switchery/dist/switchery.min.css')}}" rel="stylesheet">
 	<!-- starrr -->
 	<link href="{{asset('lte/vendors/starrr/dist/starrr.css')}}" rel="stylesheet">
 	<link rel="stylesheet" href="{{asset('css/scan.css')}}">
+  !-- Include the html5-qrcode library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- Include the QRCode.js library -->
+    <script src="https://unpkg.com/qrcode@1.5.1/build/qrcode.min.js"></script>
+
+    
+    <!-- Include the QRCode.js library -->
+    <script src="{{asset('js/scan-teacher.js')}}"></script>"
 
 </head>
 
