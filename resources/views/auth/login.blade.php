@@ -76,6 +76,14 @@
                   <form method="POST" action="{{ route('login') }}">
                      @csrf
                      <h1>Login Form</h1>
+                     <!-- Alert Info Akun Demo -->
+                     <div class="alert alert-info demo-alert" role="alert">
+                        <strong><i class="fa fa-info-circle"></i> Akun Demo:</strong><br>
+                        • <strong>Admin:</strong> <code>admin@example.com</code><br>
+                        • <strong>Teacher:</strong> <code>teacher@example.com</code><br>
+                        • <strong>Student:</strong> <code>student@example.com</code><br>
+                        • <strong>Password:</strong> <code>12345678</code>
+                     </div>
                      <div> 
                         <x-input-label for="email"/>
                         <x-text-input id="email" class="block mt-1 w-full" class="form-control" type="email" name="email" :value="old('email')" placeholder="Email" required autofocus autocomplete="username" />
