@@ -58,7 +58,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "darkterminal/turso-http-laravel"
+            ]
         }
     },
     "config": {

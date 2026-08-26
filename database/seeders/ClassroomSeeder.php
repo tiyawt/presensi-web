@@ -16,12 +16,14 @@ class ClassroomSeeder extends Seeder
         $classrooms = ['7A', '7B', '7C', '8A', '8B', '8C', '8D', '9A', '9B', '9C'];
 
         foreach ($classrooms as $name) {
-            DB::table('classrooms')->insert([
-                'name' => $name,
-                'slug' => $name,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
+            DB::table('classrooms')->updateOrInsert(
+                ['slug' => $name], // Cek berdasarkan slug
+                [
+                    'name' => $name,
+                    'updated_at' => Carbon::now(),
+                    'created_at' => Carbon::now(),
+                ]
+            );
         }
     }
 }
