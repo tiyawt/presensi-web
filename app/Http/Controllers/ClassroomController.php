@@ -71,7 +71,7 @@ class ClassroomController extends Controller
             return redirect()->route('dashboard.classroom.index')->with('success', 'Kelas berhasil ditambahkan');
         } catch (\Exception $e) {
             Log::error('Error occurred: ' . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan saat menambahkan kelas.');
+            return back()->with('error', $e->getMessage() . ' | ' . $e->getFile() . ':' . $e->getLine());
         }
     }
 
