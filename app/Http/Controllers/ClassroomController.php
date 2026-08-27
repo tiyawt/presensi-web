@@ -52,13 +52,16 @@ class ClassroomController extends Controller
     {
         try {
             $data = $request->validate([
-                'classroom_name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    Rule::unique('classrooms', 'name')->whereNull('deleted_at') // Ignores soft-deleted records
-                ],
+                'classroom_name' => ['required', 'string', 'max:255'],
             ]);
+
+            $existingClassroom = Classroom::whereRaw('LOWER(name) = ?', [strtolower($data['classroom_name'])])
+                ->whereNull('deleted_at')
+                ->first();
+
+            if ($existingClassroom) {
+                return back()->with('error', 'Nama kelas sudah ada. Pilih nama yang berbeda.');
+            }
 
             Classroom::create([
                 'name' => $data['classroom_name'],
@@ -68,7 +71,7 @@ class ClassroomController extends Controller
             return redirect()->route('dashboard.classroom.index')->with('success', 'Kelas berhasil ditambahkan');
         } catch (\Exception $e) {
             Log::error('Error occurred: ' . $e->getMessage());
-            return back()->with('error', $e->getMessage() . ' | ' . get_class($e));
+            return back()->with('error', 'Terjadi kesalahan saat menambahkan kelas.');
         }
     }
 
@@ -100,13 +103,13 @@ class ClassroomController extends Controller
             // Validate input
             $data = $request->validate([
                 'classroom_name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('classrooms', 'name')
-                    ->ignore($classroom->id)
-                    ->whereNull('deleted_at') // Ignores soft-deleted records
-            ],
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('classrooms', 'name')
+                        ->ignore($classroom->id)
+                        ->whereNull('deleted_at') // Ignores soft-deleted records
+                ],
             ]);
 
             // Find the course
