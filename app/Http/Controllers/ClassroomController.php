@@ -68,7 +68,7 @@ class ClassroomController extends Controller
             return redirect()->route('dashboard.classroom.index')->with('success', 'Kelas berhasil ditambahkan');
         } catch (\Exception $e) {
             Log::error('Error occurred: ' . $e->getMessage());
-            return back()->with('error', 'Nama kelas sudah ada. Pilih nama yang berbeda.');
+            return back()->with('error', $e->getMessage() . ' | ' . get_class($e));
         }
     }
 
