@@ -4,8 +4,8 @@ $providers = [
     App\Providers\AppServiceProvider::class,
 ];
 
-if (env('DB_CONNECTION') === 'libsql' && class_exists('DarkTerminal\TursoHttp\TursoHttpServiceProvider')) {
-    $providers[] = DarkTerminal\TursoHttp\TursoHttpServiceProvider::class;
+if (env('DB_CONNECTION') === 'libsql') {
+    $providers[] = \Turso\Http\Laravel\LibSQLHttpServiceProvider::class;
 }
 
 return $providers;
