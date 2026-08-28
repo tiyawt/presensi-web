@@ -2,10 +2,6 @@
 
 Aplikasi pencatatan dan pengelolaan kehadiran (presensi) sekolah berbasis web yang dibangun menggunakan framework **Laravel**. Aplikasi ini dilengkapi dengan Manajemen Pengguna (CRUD User), Role-Based Access Control (RBAC), pindaian QR Code, serta penerapan standar keamanan dasar.
 
-![Laravel](https://picperf.io/https://laravelnews.s3.amazonaws.com/images/laravel-featured.png)
-![PHP](https://www.php.net/images/logos/new-php-logo.svg)
-![SQLite](https://sqlite.org/images/sqlite370_banner.svg)
-
 ---
 
 ## Daftar Isi
