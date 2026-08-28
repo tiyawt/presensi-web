@@ -7,8 +7,8 @@ Aplikasi pencatatan dan pengelolaan kehadiran (presensi) sekolah berbasis web ya
 ## Daftar Isi
 
 - [Fitur Utama](#fitur-utama)
-- [Prasyarat](#️prasyarat-prerequisites)
-- [Cara Instalasi & Menjalankan Aplikasi](#️cara-instalasi--menjalankan-aplikasi)
+- [Prasyarat](#prasyarat-prerequisites)
+- [Cara Instalasi & Menjalankan Aplikasi](#cara-instalasi--menjalankan-aplikasi)
 - [Kredensial Pengguna](#kredensial-pengguna-default-accounts)
 - [Dokumentasi Teknis](#dokumentasi-teknis)
 
