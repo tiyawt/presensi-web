@@ -225,7 +225,7 @@
                                           </button>
                                         </form>                                      
                                         
-                                        <form action="{{ route('dashboard.classroom.delete', $classroom->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Apakah anda yakin ingin menhapus kelas ini?');">
+                                        <form action="{{ route('dashboard.classroom.delete', $classroom->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Apakah anda yakin ingin menghapus kelas ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm">

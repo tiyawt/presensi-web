@@ -214,7 +214,7 @@
                                       
                                       <!-- Foto: Mengambil dari relasi users melalui admin -->
                                       <td>
-                                        <img src="{{ $admin->photo ? asset('storage/' . $admin->photo) : asset('storage/app/public/photos/default-image.jpg') }}" alt="User Photo" style="width: 100px; height: auto;">
+                                        <img src="{{ $admin->photo ? asset('storage/' . $admin->photo) : asset('images/default-image.jpg') }}" alt="User Photo" style="width: 100px; height: auto;">
                                     </td>
                                     
                                     
